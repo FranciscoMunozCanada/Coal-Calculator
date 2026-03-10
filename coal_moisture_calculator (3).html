@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coal Moisture Adjustment — SHO Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --border: #30363d;
+    --accent: #f0a500; --green: #3fb950; --red: #f85149; --blue: #58a6ff;
+    --text: #e6edf3; --muted: #8b949e;
+    --fixed-bg: #1a1f2a; --fixed-text: #6a7488; --fixed-border: #2a3040;
+    --mono: 'Share Tech Mono', monospace; --sans: 'Barlow Condensed', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--sans);
+    font-size: 17px;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; padding: 32px 20px 60px;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: linear-gradient(rgba(240,165,0,0.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(240,165,0,0.03) 1px,transparent 1px);
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
+  }
+  .container { position: relative; z-index: 1; width: 100%; max-width: 640px; }
+
+  /* ── Header ── */
+  header { margin-bottom: 32px; border-left: 4px solid var(--accent); padding-left: 16px; }
+  .lab-tag { font-family: var(--mono); font-size: 13px; color: var(--accent);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
+  h1 { font-size: 36px; font-weight: 700; letter-spacing: .03em; line-height: 1.1; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 16px; color: var(--muted); margin-top: 6px; font-weight: 300; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px; margin-bottom: 20px;
+    font-size: 14px; font-family: var(--mono);
+  }
+  .legend-item { display: flex; align-items: center; gap: 10px; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+  .legend-dot.fixed    { background: var(--fixed-bg); border: 2px solid var(--fixed-border); }
+  .legend-dot.editable { background: #ffffff; border: 2px solid #aaaaaa; }
+  .legend-text.fixed   { color: var(--muted); }
+  .legend-text.white   { color: #ffffff; }
+
+  /* ── Cards ── */
+  .card { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px; margin-bottom: 20px; }
+  .section-label { font-family: var(--mono); font-size: 12px; letter-spacing: .18em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 22px;
+    display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Field rows ── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 16px; align-items: start;
+    margin-bottom: 28px;
+  }
+  .field-row:last-of-type { margin-bottom: 0; }
+
+  .field-note { padding-top: 4px; }
+  .note-label {
+    font-size: 15px; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: 8px; line-height: 1.3;
+  }
+  .note-label.fixed  { color: var(--muted); }
+  .note-label.entry  { color: #ffffff; }
+  .note-desc { font-size: 13px; color: var(--muted); line-height: 1.7; font-family: var(--mono); }
+
+  /* ── FIXED input — dark, locked ── */
+  .input-fixed {
+    width: 100%; background: var(--fixed-bg); border: 1px solid var(--fixed-border);
+    border-radius: 7px; color: var(--fixed-text); font-family: var(--mono);
+    font-size: 24px; padding: 14px 16px; cursor: not-allowed;
+    -moz-appearance: textfield;
+  }
+  .input-fixed::-webkit-outer-spin-button,
+  .input-fixed::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .fixed-badge {
+    display: inline-block; margin-top: 7px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
+    color: var(--fixed-border); text-transform: uppercase;
+    border: 1px solid var(--fixed-border); border-radius: 4px; padding: 2px 8px;
+  }
+
+  /* ── EDITABLE input — WHITE box, black text ── */
+  .input-entry {
+    width: 100%;
+    background: #ffffff;
+    border: 2px solid #cccccc;
+    border-radius: 7px;
+    color: #111111;
+    font-family: var(--mono);
+    font-size: 24px;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    -moz-appearance: textfield;
+  }
+  .input-entry::-webkit-outer-spin-button,
+  .input-entry::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .input-entry:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(240,165,0,0.25);
+  }
+  .input-entry::placeholder { color: #aaaaaa; }
+  .entry-badge {
+    display: inline-block; margin-top: 7px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
+    color: var(--accent); text-transform: uppercase;
+    border: 1px solid var(--accent); border-radius: 4px; padding: 2px 8px;
+  }
+
+  /* ── Formula box ── */
+  .formula-box {
+    background: rgba(240,165,0,.06); border: 1px solid rgba(240,165,0,.2);
+    border-radius: 7px; padding: 14px 18px; font-family: var(--mono); font-size: 14px;
+    color: var(--accent); letter-spacing: .04em; margin-top: 18px; line-height: 1.9;
+  }
+
+  /* ── Correction toggle ── */
+  .correction-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(88,166,255,.07); border: 1px solid rgba(88,166,255,.2);
+    border-radius: 8px; padding: 16px 18px; margin-top: 18px;
+  }
+  .correction-info { font-size: 14px; color: var(--blue); font-family: var(--mono); line-height: 1.6; }
+  .correction-info strong { font-size: 15px; display: block; margin-bottom: 3px; }
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 16px; }
+  .toggle-label { font-size: 13px; color: var(--muted); font-family: var(--mono); }
+  .toggle { position: relative; width: 46px; height: 26px; cursor: pointer; display: inline-block; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: var(--border); border-radius: 26px; transition: background .2s; }
+  .slider::before { content: ''; position: absolute; height: 20px; width: 20px;
+    left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: transform .2s; }
+  input:checked + .slider { background: var(--blue); }
+  input:checked + .slider::before { transform: translateX(20px); }
+
+  /* ── Button ── */
+  button#calc {
+    width: 100%; background: var(--accent); color: #000; border: none;
+    border-radius: 8px; font-family: var(--sans); font-size: 20px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; padding: 18px; cursor: pointer;
+    transition: background .2s, transform .1s; margin-bottom: 20px;
+  }
+  button#calc:hover { background: #f5b830; }
+  button#calc:active { transform: scale(.98); }
+
+  /* ── Results ── */
+  #results { display: none; animation: fadeUp .35s ease forwards; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  .status-banner {
+    border-radius: 8px; padding: 16px 18px; font-size: 16px; font-weight: 600;
+    letter-spacing: .03em; display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+  }
+  .status-banner.ok   { background:rgba(63,185,80,.1); border:1px solid rgba(63,185,80,.3); color:var(--green); }
+  .status-banner.warn { background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.3); color:var(--red); }
+  .status-banner.info { background:rgba(240,165,0,.1); border:1px solid rgba(240,165,0,.3); color:var(--accent); }
+  .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .ok .dot   { background:var(--green); box-shadow:0 0 8px var(--green); }
+  .warn .dot { background:var(--red);   box-shadow:0 0 8px var(--red); }
+  .info .dot { background:var(--accent); box-shadow:0 0 8px var(--accent); }
+
+  .result-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+  .result-cell { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:18px; text-align:center; }
+  .r-label { font-size:12px; letter-spacing:.12em; color:var(--muted); text-transform:uppercase; font-family:var(--mono); margin-bottom:8px; }
+  .r-value { font-family:var(--mono); font-size:28px; color:var(--text); }
+  .r-unit  { font-size:14px; color:var(--muted); margin-left:3px; }
+  .result-cell.highlight { border-color:var(--accent); background:rgba(240,165,0,.07); }
+  .result-cell.highlight .r-value { color:var(--accent); font-size:34px; }
+
+  .breakdown {
+    background:var(--bg); border:1px solid var(--border);
+    border-radius:8px; padding:20px; margin-bottom:18px;
+    font-family:var(--mono); font-size:14px;
+  }
+  .breakdown-title { font-size:12px; letter-spacing:.18em; color:var(--muted);
+    text-transform:uppercase; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:10px; }
+  .step-row { display:flex; justify-content:space-between; align-items:baseline;
+    border-bottom:1px solid rgba(48,54,61,.5); padding:8px 0; flex-wrap:wrap; gap:4px; }
+  .step-row:last-child { border-bottom:none; }
+  .step-name { color:var(--muted); flex:1; min-width:0; }
+  .step-eq   { color:var(--border); margin:0 10px; }
+  .step-val  { color:var(--text); text-align:right; }
+  .step-val.accent { color:var(--accent); font-size:16px; }
+  .step-val.blue   { color:var(--blue); }
+
+  .steps { border-top:1px solid var(--border); padding-top:18px;
+    font-size:15px; color:var(--muted); line-height:1.8; }
+  .steps strong { color:var(--text); font-weight:600; }
+  .steps ol { padding-left:22px; margin-top:10px; }
+  .steps li { margin-bottom:6px; }
+
+  .reset-btn { background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:8px; font-family:var(--sans); font-size:15px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase; padding:14px; cursor:pointer;
+    width:100%; transition:border-color .2s, color .2s; }
+  .reset-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* ── Credit & Footer ── */
+  .credit {
+    margin-top: 36px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 22px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .credit-left { font-size: 15px; color: var(--text); line-height: 1.7; }
+  .credit-left strong { color: var(--accent); }
+  .credit-left span   { color: var(--muted); font-size: 13px; font-family: var(--mono); display: block; }
+  .credit-right { font-family: var(--mono); font-size: 12px; color: var(--muted);
+    text-align: right; line-height: 1.7; }
+
+  footer { margin-top: 16px; font-family: var(--mono); font-size: 11px;
+    color: var(--fixed-border); letter-spacing: .1em; text-align: center; line-height: 2; }
+
+  @media (max-width: 500px) {
+    .field-row { grid-template-columns: 1fr; gap: 8px; }
+    .result-grid { grid-template-columns: 1fr; }
+    .credit { flex-direction: column; }
+    .credit-right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="lab-tag">CanmetENERGY · MFL-SHO · WI-MFL-PC-SHO Rev.1</div>
+    <h1>Coal Moisture <span>Adjustment</span></h1>
+    <div class="subtitle">Sole Heated Oven — Water Addition Calculator</div>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot fixed"></div>
+      <span class="legend-text fixed">Fixed standard value — do not change</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot editable"></div>
+      <span class="legend-text white">← Enter your value in the white box</span>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card">
+    <div class="section-label">Step 1 — Initial Moisture Determination (sub-sample)</div>
+
+    <div class="field-row">
+      <div class="field-note">
+        <div class="note-label fixed">W₁ — Wet sample</div>
+        <div class="note-desc">Always start with exactly<br>50 g of coal from the<br>mixed batch. Place it in<br>the drying oven.<br><br>This number never<br>changes.</div>
+      </div>
+      <div>
+        <input type="number" id="w1" class="input-fixed" value="50" readonly tabindex="-1">
+        <div class="fixed-badge">⊘ standard — do not change</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-note">
+        <div class="note-label entry">W₂ — Dry sample</div>
+        <div class="note-desc">After drying at 115°C<br>for 15 minutes, weigh<br>the same sample again.<br><br>Type that weight<br>here (in grams).</div>
+      </div>
+      <div>
+        <input type="number" id="w2" class="input-entry" placeholder="e.g.  48.50" step="0.01" min="0.01">
+        <div class="entry-badge">✎ enter weight after drying (g)</div>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      MC₁  =  ( W₁ − W₂ ) / W₁  ×  100<br>
+      <span style="color:var(--muted); font-size:13px">// calculates the current moisture % of your coal sample</span>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card">
+    <div class="section-label">Step 2 — Full Batch &amp; Target Moisture</div>
+
+    <div class="field-row">
+      <div class="field-note">
+        <div class="note-label entry">CB — Batch weight</div>
+        <div class="note-desc">Total weight of the full<br>coal batch you are<br>preparing today.<br><br>Typical range:<br>35 to 80 lb.<br><br>Type the actual<br>weight of your batch.</div>
+      </div>
+      <div>
+        <input type="number" id="cb" class="input-entry" placeholder="e.g.  75" step="0.1" min="1" max="80">
+        <div class="entry-badge">✎ enter batch weight (lb) — 35 to 80 lb</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-note">
+        <div class="note-label fixed">MT — Target moisture</div>
+        <div class="note-desc">Required for a valid SHO<br>test: between 3.8%<br>and 4.2%. Fixed at<br>4.0% per SOP.<br><br>Do not change this.</div>
+      </div>
+      <div>
+        <input type="number" id="mt" class="input-fixed" value="4.0" readonly tabindex="-1">
+        <div class="fixed-badge">⊘ standard — do not change</div>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      Water (lb)  =  CB × ( MT_eff − MC₁ ) / ( 100 − MT_eff )<br>
+      <span style="color:var(--muted); font-size:13px">// MT_eff includes the +0.15% evaporation correction when ON</span>
+    </div>
+
+    <div class="correction-row">
+      <div class="correction-info">
+        <strong>Evaporation Correction (+0.15%)</strong>
+        Offsets moisture lost during 5–10 min mixing.<br>
+        Validated over multiple years — F. Muñoz.
+      </div>
+      <div class="toggle-wrap">
+        <span class="toggle-label">OFF</span>
+        <label class="toggle">
+          <input type="checkbox" id="correction" checked>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">ON</span>
+      </div>
+    </div>
+  </div>
+
+  <button id="calc" onclick="calculate()">⟶  Calculate Water Addition</button>
+
+  <div id="results">
+    <div class="card">
+      <div class="section-label">Results</div>
+      <div id="status-banner"></div>
+      <div class="result-grid">
+        <div class="result-cell">
+          <div class="r-label">Initial Moisture (MC₁)</div>
+          <div class="r-value" id="r-mc1">—</div>
+        </div>
+        <div class="result-cell">
+          <div class="r-label">Effective Target</div>
+          <div class="r-value" id="r-mt-eff">—</div>
+        </div>
+        <div class="result-cell highlight" id="r-water-cell">
+          <div class="r-label">Water to Add</div>
+          <div class="r-value" id="r-water">—</div>
+        </div>
+        <div class="result-cell">
+          <div class="r-label">Water to Add</div>
+          <div class="r-value" id="r-water-g">—</div>
+        </div>
+      </div>
+      <div class="breakdown" id="breakdown"></div>
+      <div class="steps" id="next-steps"></div>
+    </div>
+    <button class="reset-btn" onclick="reset()">↺  New Calculation</button>
+  </div>
+
+  <!-- Credit block -->
+  <div class="credit">
+    <div class="credit-left">
+      Developed by <strong>Francisco Muñoz</strong><br>
+      for CanmetENERGY — Metallurgical Fuels Laboratory
+      <span>Based on SOP WI-MFL-PC-SHO Rev.1 · March 2026</span>
+    </div>
+    <div class="credit-right">
+      CanmetENERGY<br>
+      Natural Resources Canada<br>
+      Ottawa, Canada
+    </div>
+  </div>
+
+  <footer>WI-MFL-PC-SHO · Evaporation correction (0.15%) validated internally · F. Muñoz</footer>
+</div>
+
+<script>
+const EVAP = 0.15;
+
+function calculate() {
+  const w1 = parseFloat(document.getElementById('w1').value);
+  const w2 = parseFloat(document.getElementById('w2').value);
+  const cb = parseFloat(document.getElementById('cb').value);
+  const mt = parseFloat(document.getElementById('mt').value);
+  const useCor = document.getElementById('correction').checked;
+
+  if (isNaN(w2) || w2 <= 0) {
+    alert('Please enter the dry sample weight (W₂) — the weight of your coal after drying.'); return;
+  }
+  if (isNaN(cb) || cb <= 0) {
+    alert('Please enter the coal batch weight (CB) in pounds.'); return;
+  }
+  if (w2 >= w1) {
+    alert('The dry weight (W₂) must be less than the starting weight (W₁ = 50 g).\nPlease check your measurement.'); return;
+  }
+  if (cb < 35 || cb > 80) {
+    const go = confirm(`Batch weight ${cb} lb is outside the typical range (35–80 lb).\nProceed anyway?`);
+    if (!go) return;
+  }
+
+  const mc1     = (w1 - w2) / w1 * 100;
+  const mtEff   = useCor ? mt + EVAP : mt;
+  const waterLb = cb * (mtEff - mc1) / (100 - mtEff);
+  const waterG  = waterLb * 453.592;
+
+  document.getElementById('r-mc1').innerHTML =
+    mc1.toFixed(2) + '<span class="r-unit"> %</span>';
+  document.getElementById('r-mt-eff').innerHTML =
+    mtEff.toFixed(2) + '<span class="r-unit"> %</span>' +
+    (useCor ? '<br><span style="font-size:12px;color:var(--blue)">incl. +0.15% correction</span>' : '');
+
+  document.getElementById('breakdown').innerHTML = `
+    <div class="breakdown-title">Step-by-step calculation</div>
+    <div class="step-row"><span class="step-name">W₁ — wet sample (standard)</span><span class="step-eq">=</span><span class="step-val">${w1.toFixed(2)} g</span></div>
+    <div class="step-row"><span class="step-name">W₂ — dry sample after 115°C / 15 min</span><span class="step-eq">=</span><span class="step-val" style="color:#7dd3fc">${w2.toFixed(2)} g</span></div>
+    <div class="step-row"><span class="step-name">Water driven off (W₁ − W₂)</span><span class="step-eq">=</span><span class="step-val">${(w1-w2).toFixed(2)} g</span></div>
+    <div class="step-row"><span class="step-name">MC₁ = (W₁−W₂) / W₁ × 100</span><span class="step-eq">=</span><span class="step-val blue">${mc1.toFixed(3)} %</span></div>
+    <div class="step-row"><span class="step-name">Nominal target MT (standard)</span><span class="step-eq">=</span><span class="step-val">${mt.toFixed(1)} %</span></div>
+    <div class="step-row"><span class="step-name">Evaporation correction</span><span class="step-eq">=</span><span class="step-val ${useCor?'blue':''}">${useCor ? '+0.15%  (ON)' : 'OFF'}</span></div>
+    <div class="step-row"><span class="step-name">Effective target MT_eff</span><span class="step-eq">=</span><span class="step-val blue">${mtEff.toFixed(2)} %</span></div>
+    <div class="step-row"><span class="step-name">Batch weight CB</span><span class="step-eq">=</span><span class="step-val" style="color:#f0c060">${cb} lb</span></div>
+    <div class="step-row"><span class="step-name">MT_eff − MC₁</span><span class="step-eq">=</span><span class="step-val">${(mtEff - mc1).toFixed(4)}</span></div>
+    <div class="step-row"><span class="step-name">100 − MT_eff</span><span class="step-eq">=</span><span class="step-val">${(100 - mtEff).toFixed(2)}</span></div>
+    <div class="step-row"><span class="step-name">Water = CB × (MT_eff−MC₁) / (100−MT_eff)</span><span class="step-eq">=</span>
+      <span class="step-val accent">${waterLb > 0 ? waterLb.toFixed(4) + ' lb  ≈  ' + Math.round(waterG) + ' g' : 'none needed'}</span></div>`;
+
+  const banner    = document.getElementById('status-banner');
+  const stepsDiv  = document.getElementById('next-steps');
+  const waterCell = document.getElementById('r-water-cell');
+
+  if (mc1 > mtEff + 0.5) {
+    banner.className = 'status-banner warn';
+    banner.innerHTML = `<div class="dot"></div> Coal is over-moist (MC₁ = ${mc1.toFixed(2)}%). Allow to air-dry before proceeding.`;
+    document.getElementById('r-water').innerHTML   = 'N/A';
+    document.getElementById('r-water-g').innerHTML = 'N/A';
+    waterCell.classList.remove('highlight');
+    stepsDiv.innerHTML = `<strong>Next steps:</strong><ol>
+      <li>Spread coal evenly and allow to air-dry.</li>
+      <li>Re-sample (50 g) and re-determine moisture.</li>
+      <li>Re-run this calculator once MC₁ is below target.</li></ol>`;
+  } else if (mc1 >= mtEff - 0.2 && mc1 <= mtEff + 0.5) {
+    banner.className = 'status-banner ok';
+    banner.innerHTML = `<div class="dot"></div> Coal is already within target range (${mc1.toFixed(2)}%). No water addition needed.`;
+    document.getElementById('r-water').innerHTML   = '0.000 <span class="r-unit">lb</span>';
+    document.getElementById('r-water-g').innerHTML = '0 <span class="r-unit">g</span>';
+    waterCell.classList.add('highlight');
+    stepsDiv.innerHTML = `<strong>Next steps:</strong><ol>
+      <li>Confirm with a second 50 g verification sub-sample.</li>
+      <li>Proceed to charging the SHO chambers.</li></ol>`;
+  } else {
+    banner.className = 'status-banner info';
+    banner.innerHTML = `<div class="dot"></div> Water addition required — spray gradually and mix for 5–10 minutes.`;
+    document.getElementById('r-water').innerHTML   = waterLb.toFixed(3) + ' <span class="r-unit">lb</span>';
+    document.getElementById('r-water-g').innerHTML = Math.round(waterG) + ' <span class="r-unit">g</span>';
+    waterCell.classList.add('highlight');
+    stepsDiv.innerHTML = `<strong>Next steps:</strong><ol>
+      <li>Spread the ${cb} lb coal batch evenly on the surface.</li>
+      <li>Gradually spray <strong>${waterLb.toFixed(3)} lb (≈ ${Math.round(waterG)} g)</strong> of water while mixing continuously.</li>
+      <li>Mix thoroughly for 5–10 minutes to ensure uniform moisture distribution.</li>
+      <li>Cover with plastic film and allow to equilibrate for at least 15 minutes.</li>
+      <li>Take a new 50 g sub-sample and verify moisture is within ±5% of ${mt.toFixed(1)}%.</li>
+      <li>If still below target, repeat water addition in small increments.</li></ol>`;
+  }
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function reset() {
+  document.getElementById('w2').value = '';
+  document.getElementById('cb').value = '';
+  document.getElementById('results').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
