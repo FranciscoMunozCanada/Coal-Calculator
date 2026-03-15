@@ -16,8 +16,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg); color: var(--text); font-family: var(--sans);
-    font-size: 17px;
-    min-height: 100vh; display: flex; flex-direction: column;
+    font-size: 17px; min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; padding: 32px 20px 60px;
   }
   body::before {
@@ -28,7 +27,6 @@
   }
   .container { position: relative; z-index: 1; width: 100%; max-width: 640px; }
 
-  /* ── Header ── */
   header { margin-bottom: 32px; border-left: 4px solid var(--accent); padding-left: 16px; }
   .lab-tag { font-family: var(--mono); font-size: 13px; color: var(--accent);
     letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
@@ -36,7 +34,6 @@
   h1 span { color: var(--accent); }
   .subtitle { font-size: 16px; color: var(--muted); margin-top: 6px; font-weight: 300; }
 
-  /* ── Legend ── */
   .legend {
     display: flex; gap: 20px; flex-wrap: wrap;
     background: var(--panel); border: 1px solid var(--border);
@@ -47,10 +44,9 @@
   .legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
   .legend-dot.fixed    { background: var(--fixed-bg); border: 2px solid var(--fixed-border); }
   .legend-dot.editable { background: #ffffff; border: 2px solid #aaaaaa; }
-  .legend-text.fixed   { color: var(--muted); }
-  .legend-text.white   { color: #ffffff; }
+  .legend-text.fixed { color: var(--muted); }
+  .legend-text.white { color: #ffffff; }
 
-  /* ── Cards ── */
   .card { background: var(--panel); border: 1px solid var(--border);
     border-radius: 10px; padding: 28px; margin-bottom: 20px; }
   .section-label { font-family: var(--mono); font-size: 12px; letter-spacing: .18em;
@@ -58,94 +54,59 @@
     display: flex; align-items: center; gap: 10px; }
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* ── Field rows ── */
   .field-row {
-    display: grid;
-    grid-template-columns: 210px 1fr;
-    gap: 16px; align-items: start;
-    margin-bottom: 28px;
+    display: grid; grid-template-columns: 210px 1fr;
+    gap: 16px; align-items: start; margin-bottom: 28px;
   }
   .field-row:last-of-type { margin-bottom: 0; }
-
   .field-note { padding-top: 4px; }
-  .note-label {
-    font-size: 15px; font-weight: 700; letter-spacing: .05em;
-    text-transform: uppercase; margin-bottom: 8px; line-height: 1.3;
-  }
-  .note-label.fixed  { color: var(--muted); }
-  .note-label.entry  { color: #ffffff; }
+  .note-label { font-size: 15px; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: 8px; line-height: 1.3; }
+  .note-label.fixed { color: var(--muted); }
+  .note-label.entry { color: #ffffff; }
   .note-desc { font-size: 13px; color: var(--muted); line-height: 1.7; font-family: var(--mono); }
 
-  /* ── FIXED input — dark, locked ── */
   .input-fixed {
     width: 100%; background: var(--fixed-bg); border: 1px solid var(--fixed-border);
     border-radius: 7px; color: var(--fixed-text); font-family: var(--mono);
-    font-size: 24px; padding: 14px 16px; cursor: not-allowed;
-    -moz-appearance: textfield;
+    font-size: 24px; padding: 14px 16px; cursor: not-allowed; -moz-appearance: textfield;
   }
   .input-fixed::-webkit-outer-spin-button,
   .input-fixed::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .fixed-badge {
-    display: inline-block; margin-top: 7px;
-    font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
-    color: var(--fixed-border); text-transform: uppercase;
-    border: 1px solid var(--fixed-border); border-radius: 4px; padding: 2px 8px;
-  }
+  .fixed-badge { display: inline-block; margin-top: 7px; font-family: var(--mono);
+    font-size: 12px; letter-spacing: .08em; color: var(--fixed-border);
+    text-transform: uppercase; border: 1px solid var(--fixed-border);
+    border-radius: 4px; padding: 2px 8px; }
 
-  /* ── EDITABLE input — WHITE box, black text ── */
   .input-entry {
-    width: 100%;
-    background: #ffffff;
-    border: 2px solid #cccccc;
-    border-radius: 7px;
-    color: #111111;
-    font-family: var(--mono);
-    font-size: 24px;
-    padding: 14px 16px;
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-    -moz-appearance: textfield;
+    width: 100%; background: #ffffff; border: 2px solid #cccccc;
+    border-radius: 7px; color: #111111; font-family: var(--mono);
+    font-size: 24px; padding: 14px 16px; outline: none;
+    transition: border-color .2s, box-shadow .2s; -moz-appearance: textfield;
   }
   .input-entry::-webkit-outer-spin-button,
   .input-entry::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .input-entry:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(240,165,0,0.25);
-  }
+  .input-entry:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(240,165,0,0.25); }
   .input-entry::placeholder { color: #aaaaaa; }
-  .entry-badge {
-    display: inline-block; margin-top: 7px;
-    font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
-    color: var(--accent); text-transform: uppercase;
-    border: 1px solid var(--accent); border-radius: 4px; padding: 2px 8px;
-  }
+  .entry-badge { display: inline-block; margin-top: 7px; font-family: var(--mono);
+    font-size: 12px; letter-spacing: .08em; color: var(--accent);
+    text-transform: uppercase; border: 1px solid var(--accent); border-radius: 4px; padding: 2px 8px; }
 
-  /* ── Formula box ── */
   .formula-box {
     background: rgba(240,165,0,.06); border: 1px solid rgba(240,165,0,.2);
     border-radius: 7px; padding: 14px 18px; font-family: var(--mono); font-size: 14px;
     color: var(--accent); letter-spacing: .04em; margin-top: 18px; line-height: 1.9;
   }
 
-  /* ── Correction toggle ── */
-  .correction-row {
-    display: flex; align-items: center; justify-content: space-between;
+  .factor-note {
+    display: flex; align-items: flex-start; gap: 12px;
     background: rgba(88,166,255,.07); border: 1px solid rgba(88,166,255,.2);
     border-radius: 8px; padding: 16px 18px; margin-top: 18px;
   }
-  .correction-info { font-size: 14px; color: var(--blue); font-family: var(--mono); line-height: 1.6; }
-  .correction-info strong { font-size: 15px; display: block; margin-bottom: 3px; }
-  .toggle-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 16px; }
-  .toggle-label { font-size: 13px; color: var(--muted); font-family: var(--mono); }
-  .toggle { position: relative; width: 46px; height: 26px; cursor: pointer; display: inline-block; }
-  .toggle input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; inset: 0; background: var(--border); border-radius: 26px; transition: background .2s; }
-  .slider::before { content: ''; position: absolute; height: 20px; width: 20px;
-    left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: transform .2s; }
-  input:checked + .slider { background: var(--blue); }
-  input:checked + .slider::before { transform: translateX(20px); }
+  .factor-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .factor-text { font-size: 14px; color: var(--blue); font-family: var(--mono); line-height: 1.6; }
+  .factor-text strong { font-size: 15px; display: block; margin-bottom: 4px; color: #7dd3fc; }
 
-  /* ── Button ── */
   button#calc {
     width: 100%; background: var(--accent); color: #000; border: none;
     border-radius: 8px; font-family: var(--sans); font-size: 20px; font-weight: 700;
@@ -155,14 +116,11 @@
   button#calc:hover { background: #f5b830; }
   button#calc:active { transform: scale(.98); }
 
-  /* ── Results ── */
   #results { display: none; animation: fadeUp .35s ease forwards; }
   @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
-  .status-banner {
-    border-radius: 8px; padding: 16px 18px; font-size: 16px; font-weight: 600;
-    letter-spacing: .03em; display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
-  }
+  .status-banner { border-radius: 8px; padding: 16px 18px; font-size: 16px; font-weight: 600;
+    letter-spacing: .03em; display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
   .status-banner.ok   { background:rgba(63,185,80,.1); border:1px solid rgba(63,185,80,.3); color:var(--green); }
   .status-banner.warn { background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.3); color:var(--red); }
   .status-banner.info { background:rgba(240,165,0,.1); border:1px solid rgba(240,165,0,.3); color:var(--accent); }
@@ -179,11 +137,9 @@
   .result-cell.highlight { border-color:var(--accent); background:rgba(240,165,0,.07); }
   .result-cell.highlight .r-value { color:var(--accent); font-size:34px; }
 
-  .breakdown {
-    background:var(--bg); border:1px solid var(--border);
+  .breakdown { background:var(--bg); border:1px solid var(--border);
     border-radius:8px; padding:20px; margin-bottom:18px;
-    font-family:var(--mono); font-size:14px;
-  }
+    font-family:var(--mono); font-size:14px; }
   .breakdown-title { font-size:12px; letter-spacing:.18em; color:var(--muted);
     text-transform:uppercase; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:10px; }
   .step-row { display:flex; justify-content:space-between; align-items:baseline;
@@ -207,18 +163,13 @@
     width:100%; transition:border-color .2s, color .2s; }
   .reset-btn:hover { border-color:var(--accent); color:var(--accent); }
 
-  /* ── Credit & Footer ── */
-  .credit {
-    margin-top: 36px;
-    background: var(--panel); border: 1px solid var(--border);
+  .credit { margin-top: 36px; background: var(--panel); border: 1px solid var(--border);
     border-radius: 10px; padding: 18px 22px;
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-  }
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
   .credit-left { font-size: 15px; color: var(--text); line-height: 1.7; }
   .credit-left strong { color: var(--accent); }
-  .credit-left span   { color: var(--muted); font-size: 13px; font-family: var(--mono); display: block; }
-  .credit-right { font-family: var(--mono); font-size: 12px; color: var(--muted);
-    text-align: right; line-height: 1.7; }
+  .credit-left span { color: var(--muted); font-size: 13px; font-family: var(--mono); display: block; }
+  .credit-right { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; line-height: 1.7; }
 
   footer { margin-top: 16px; font-family: var(--mono); font-size: 11px;
     color: var(--fixed-border); letter-spacing: .1em; text-align: center; line-height: 2; }
@@ -258,7 +209,7 @@
     <div class="field-row">
       <div class="field-note">
         <div class="note-label fixed">W₁ — Wet sample</div>
-        <div class="note-desc">Always start with exactly<br>50 g of coal from the<br>mixed batch. Place it in<br>the drying oven.<br><br>This number never<br>changes.</div>
+        <div class="note-desc">Always start with exactly<br>50 g of coal from the<br>mixed batch. Place it in<br>the Moisture Teller.<br><br>This number never<br>changes.</div>
       </div>
       <div>
         <input type="number" id="w1" class="input-fixed" value="50" readonly tabindex="-1">
@@ -269,7 +220,7 @@
     <div class="field-row">
       <div class="field-note">
         <div class="note-label entry">W₂ — Dry sample</div>
-        <div class="note-desc">After drying at 115°C<br>for 15 minutes, weigh<br>the same sample again.<br><br>Type that weight<br>here (in grams).</div>
+        <div class="note-desc">After drying at 115°C<br>for 15 minutes in the<br>Moisture Teller, weigh<br>the same sample again.<br><br>Type that weight<br>here (in grams).</div>
       </div>
       <div>
         <input type="number" id="w2" class="input-entry" placeholder="e.g.  48.50" step="0.01" min="0.01">
@@ -278,7 +229,7 @@
     </div>
 
     <div class="formula-box">
-      MC₁  =  ( W₁ − W₂ ) / W₁  ×  100<br>
+      MC₁  =  [ ( W₁ − W₂ ) / W₁ ]  ×  100<br>
       <span style="color:var(--muted); font-size:13px">// calculates the current moisture % of your coal sample</span>
     </div>
   </div>
@@ -310,23 +261,18 @@
     </div>
 
     <div class="formula-box">
-      Water (lb)  =  CB × ( MT_eff − MC₁ ) / ( 100 − MT_eff )<br>
-      <span style="color:var(--muted); font-size:13px">// MT_eff includes the +0.15% evaporation correction when ON</span>
+      Water (lb)  =  CB  ×  [ ( MT − MC₁ ) / 100 ]  ×  1.10<br>
+      <span style="color:var(--muted); font-size:13px">// factor 1.10 offsets moisture lost during mixing</span>
     </div>
 
-    <div class="correction-row">
-      <div class="correction-info">
-        <strong>Evaporation Correction (+0.15%)</strong>
-        Offsets moisture lost during 5–10 min mixing.<br>
-        Validated over multiple years — F. Muñoz.
-      </div>
-      <div class="toggle-wrap">
-        <span class="toggle-label">OFF</span>
-        <label class="toggle">
-          <input type="checkbox" id="correction" checked>
-          <span class="slider"></span>
-        </label>
-        <span class="toggle-label">ON</span>
+    <div class="factor-note">
+      <div class="factor-icon">💧</div>
+      <div class="factor-text">
+        <strong>Why × 1.10?</strong>
+        The 1.10 factor adds 10% extra water to compensate for
+        moisture lost to evaporation during the 5–10 minute
+        mixing process. This has been validated internally
+        over multiple years of SHO testing by F. Muñoz.
       </div>
     </div>
   </div>
@@ -343,8 +289,8 @@
           <div class="r-value" id="r-mc1">—</div>
         </div>
         <div class="result-cell">
-          <div class="r-label">Effective Target</div>
-          <div class="r-value" id="r-mt-eff">—</div>
+          <div class="r-label">Moisture Difference</div>
+          <div class="r-value" id="r-diff">—</div>
         </div>
         <div class="result-cell highlight" id="r-water-cell">
           <div class="r-label">Water to Add</div>
@@ -361,7 +307,6 @@
     <button class="reset-btn" onclick="reset()">↺  New Calculation</button>
   </div>
 
-  <!-- Credit block -->
   <div class="credit">
     <div class="credit-left">
       Developed by <strong>Francisco Muñoz</strong><br>
@@ -375,21 +320,18 @@
     </div>
   </div>
 
-  <footer>WI-MFL-PC-SHO · Evaporation correction (0.15%) validated internally · F. Muñoz</footer>
+  <footer>WI-MFL-PC-SHO · Factor 1.10 validated internally · F. Muñoz · CanmetENERGY</footer>
 </div>
 
 <script>
-const EVAP = 0.15;
-
 function calculate() {
   const w1 = parseFloat(document.getElementById('w1').value);
   const w2 = parseFloat(document.getElementById('w2').value);
   const cb = parseFloat(document.getElementById('cb').value);
   const mt = parseFloat(document.getElementById('mt').value);
-  const useCor = document.getElementById('correction').checked;
 
   if (isNaN(w2) || w2 <= 0) {
-    alert('Please enter the dry sample weight (W₂) — the weight of your coal after drying.'); return;
+    alert('Please enter the dry sample weight (W₂) — the weight after drying in the Moisture Teller.'); return;
   }
   if (isNaN(cb) || cb <= 0) {
     alert('Please enter the coal batch weight (CB) in pounds.'); return;
@@ -402,47 +344,46 @@ function calculate() {
     if (!go) return;
   }
 
-  const mc1     = (w1 - w2) / w1 * 100;
-  const mtEff   = useCor ? mt + EVAP : mt;
-  const waterLb = cb * (mtEff - mc1) / (100 - mtEff);
-  const waterG  = waterLb * 453.592;
+  // Formula: Water (lb) = CB × [(MT - MC1) / 100] × 1.10
+  const mc1      = (w1 - w2) / w1 * 100;
+  const diff     = mt - mc1;
+  const waterLb  = cb * (diff / 100) * 1.10;
+  const waterG   = waterLb * 453.592;
 
   document.getElementById('r-mc1').innerHTML =
     mc1.toFixed(2) + '<span class="r-unit"> %</span>';
-  document.getElementById('r-mt-eff').innerHTML =
-    mtEff.toFixed(2) + '<span class="r-unit"> %</span>' +
-    (useCor ? '<br><span style="font-size:12px;color:var(--blue)">incl. +0.15% correction</span>' : '');
+  document.getElementById('r-diff').innerHTML =
+    diff.toFixed(3) + '<span class="r-unit"> %</span>' +
+    '<br><span style="font-size:12px;color:var(--muted)">(MT − MC₁)</span>';
 
+  // Breakdown
   document.getElementById('breakdown').innerHTML = `
     <div class="breakdown-title">Step-by-step calculation</div>
     <div class="step-row"><span class="step-name">W₁ — wet sample (standard)</span><span class="step-eq">=</span><span class="step-val">${w1.toFixed(2)} g</span></div>
     <div class="step-row"><span class="step-name">W₂ — dry sample after 115°C / 15 min</span><span class="step-eq">=</span><span class="step-val" style="color:#7dd3fc">${w2.toFixed(2)} g</span></div>
     <div class="step-row"><span class="step-name">Water driven off (W₁ − W₂)</span><span class="step-eq">=</span><span class="step-val">${(w1-w2).toFixed(2)} g</span></div>
-    <div class="step-row"><span class="step-name">MC₁ = (W₁−W₂) / W₁ × 100</span><span class="step-eq">=</span><span class="step-val blue">${mc1.toFixed(3)} %</span></div>
-    <div class="step-row"><span class="step-name">Nominal target MT (standard)</span><span class="step-eq">=</span><span class="step-val">${mt.toFixed(1)} %</span></div>
-    <div class="step-row"><span class="step-name">Evaporation correction</span><span class="step-eq">=</span><span class="step-val ${useCor?'blue':''}">${useCor ? '+0.15%  (ON)' : 'OFF'}</span></div>
-    <div class="step-row"><span class="step-name">Effective target MT_eff</span><span class="step-eq">=</span><span class="step-val blue">${mtEff.toFixed(2)} %</span></div>
+    <div class="step-row"><span class="step-name">MC₁ = [(W₁−W₂) / W₁] × 100</span><span class="step-eq">=</span><span class="step-val blue">${mc1.toFixed(3)} %</span></div>
+    <div class="step-row"><span class="step-name">Target moisture MT (standard)</span><span class="step-eq">=</span><span class="step-val">${mt.toFixed(1)} %</span></div>
+    <div class="step-row"><span class="step-name">MT − MC₁ (moisture to add)</span><span class="step-eq">=</span><span class="step-val">${diff.toFixed(4)}</span></div>
     <div class="step-row"><span class="step-name">Batch weight CB</span><span class="step-eq">=</span><span class="step-val" style="color:#f0c060">${cb} lb</span></div>
-    <div class="step-row"><span class="step-name">MT_eff − MC₁</span><span class="step-eq">=</span><span class="step-val">${(mtEff - mc1).toFixed(4)}</span></div>
-    <div class="step-row"><span class="step-name">100 − MT_eff</span><span class="step-eq">=</span><span class="step-val">${(100 - mtEff).toFixed(2)}</span></div>
-    <div class="step-row"><span class="step-name">Water = CB × (MT_eff−MC₁) / (100−MT_eff)</span><span class="step-eq">=</span>
-      <span class="step-val accent">${waterLb > 0 ? waterLb.toFixed(4) + ' lb  ≈  ' + Math.round(waterG) + ' g' : 'none needed'}</span></div>`;
+    <div class="step-row"><span class="step-name">CB × (MT−MC₁) / 100</span><span class="step-eq">=</span><span class="step-val">${(cb * diff / 100).toFixed(4)} lb</span></div>
+    <div class="step-row"><span class="step-name">× 1.10 (mixing evaporation factor)</span><span class="step-eq">=</span><span class="step-val accent">${waterLb > 0 ? waterLb.toFixed(4) + ' lb  ≈  ' + Math.round(waterG) + ' g' : 'none needed'}</span></div>`;
 
   const banner    = document.getElementById('status-banner');
   const stepsDiv  = document.getElementById('next-steps');
   const waterCell = document.getElementById('r-water-cell');
 
-  if (mc1 > mtEff + 0.5) {
+  if (mc1 >= mt) {
     banner.className = 'status-banner warn';
-    banner.innerHTML = `<div class="dot"></div> Coal is over-moist (MC₁ = ${mc1.toFixed(2)}%). Allow to air-dry before proceeding.`;
+    banner.innerHTML = `<div class="dot"></div> Coal is at or above target moisture (MC₁ = ${mc1.toFixed(2)}%). Allow to air-dry before proceeding.`;
     document.getElementById('r-water').innerHTML   = 'N/A';
     document.getElementById('r-water-g').innerHTML = 'N/A';
     waterCell.classList.remove('highlight');
     stepsDiv.innerHTML = `<strong>Next steps:</strong><ol>
       <li>Spread coal evenly and allow to air-dry.</li>
-      <li>Re-sample (50 g) and re-determine moisture.</li>
+      <li>Re-sample (50 g) and re-determine moisture in the Moisture Teller.</li>
       <li>Re-run this calculator once MC₁ is below target.</li></ol>`;
-  } else if (mc1 >= mtEff - 0.2 && mc1 <= mtEff + 0.5) {
+  } else if (mc1 >= mt - 0.2) {
     banner.className = 'status-banner ok';
     banner.innerHTML = `<div class="dot"></div> Coal is already within target range (${mc1.toFixed(2)}%). No water addition needed.`;
     document.getElementById('r-water').innerHTML   = '0.000 <span class="r-unit">lb</span>';
